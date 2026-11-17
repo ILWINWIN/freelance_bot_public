@@ -222,6 +222,7 @@ class TelegramPolling:
 
     def process_update(self, update: dict) -> bool:
         """Handle and checkpoint one update only after its durable handler succeeds."""
+        # Публикация должна попасть в SQLite inbox до сдвига общего Bot API offset.
         if not self._handle_update(update):
             return False
         try:

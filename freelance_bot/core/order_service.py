@@ -72,6 +72,7 @@ class OrderService:
         if self.database.is_deleted_telegram_message(external_id):
             self.database.log("telegram", "skipped_deleted_order", "skipped", external_id)
             return IntakeResult(None, False, False, "skipped_deleted_order")
+        # Общий шлюз для Bot API и User API отбрасывает шум до записи заказа и отправки карточки.
         gate = telegram_order_gate(
             original_text,
             self.profile.telegram_hard_stops if self.profile.telegram_gate_configured else None,

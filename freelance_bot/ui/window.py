@@ -794,6 +794,7 @@ class Dashboard(QMainWindow):
     def _apply_deletion_selection(self):
         """Restore selected Order IDs after a feed refresh or sort."""
         selection = self.table.selectionModel()
+        # Временная очистка Qt-выбора не должна сбросить сохранённые ID заказов.
         selection.blockSignals(True)
         selection.clearSelection()
         for row, ((order, _, _), expanded) in enumerate(self.model.rows):

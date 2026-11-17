@@ -425,6 +425,7 @@ class TelegramUserService:
 
     def _receive_envelope(self, source: TelegramSource, envelope, origin: str = "realtime") -> None:
         """Run the existing canonical pipeline, then advance a source checkpoint."""
+        # Продвигаем checkpoint после обработки, чтобы ошибка не отметила сообщение как пройденное.
         result = self.receive_order(envelope)
         self.database.mark_telegram_user_message_saved(source.chat_id, envelope.message_id)
         if origin == "history" and result.is_new:
@@ -558,7 +559,7 @@ class TelegramUserService:
     async def _next_processing_item(self, realtime_burst: int) -> _QueuedEnvelope:
         assert self._realtime_queue is not None and self._history_queue is not None
         assert self._processing_ready is not None
-        # Let either queue wake idle workers without competing Queue.get calls.
+        # Один сигнал для двух очередей позволяет проверить приоритет после пробуждения.
         while self._realtime_queue.empty() and self._history_queue.empty():
             self._processing_ready.clear()
             await self._processing_ready.wait()

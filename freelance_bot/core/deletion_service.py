@@ -100,6 +100,7 @@ class DeletionService:
     def recover_pending_deletions_on_startup(self) -> int:
         """Reset every persisted request to a fresh five-minute window before processing."""
         now = self._utc(self._now())
+        # После перезапуска даём новый интервал отмены и отсчитываем его по монотонным часам.
         runtime_deadline = self._monotonic() + self._delay_seconds
         with self._lock:
             count = self.database.recover_order_deletion_deadlines(

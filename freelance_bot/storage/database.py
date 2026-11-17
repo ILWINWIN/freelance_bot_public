@@ -246,6 +246,7 @@ class Database:
                     "DELETE FROM telegram_message_aliases WHERE platform_id='telegram' AND external_id=?", (external_id,)
                 )
 
+            # Новый идентификатор сообщения может принадлежать репосту уже сохранённого заказа.
             duplicate = None
             if fingerprint:
                 duplicate = self.connection.execute(
@@ -612,6 +613,7 @@ class Database:
                 self.connection.rollback()
                 return "blocked", "Идёт доставка Telegram-заказа."
 
+            # Запоминаем исходное сообщение и репосты до удаления, чтобы история не импортировала их заново.
             identities = [(str(row["platform_id"]), str(row["external_id"]))]
             identities.extend(
                 (str(alias["platform_id"]), str(alias["external_id"]))

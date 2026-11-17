@@ -808,6 +808,7 @@ class Application:
             return False
         if recheck_profile and not matches(persisted, self.orders.profile):
             return False
+        # Резервируем доставку до вызова Telegram, чтобы параллельные пути не отправили две карточки.
         if not self.database.reserve_telegram_order_delivery(persisted.id, owner_id):
             return False
         try:
